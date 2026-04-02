@@ -1,0 +1,41 @@
+{
+  "name": "pi-fff",
+  "version": "0.1.0",
+  "description": "pi extension: FFF-powered fuzzy file and content search",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SamuelLHuber/pi-fff.git"
+  },
+  "homepage": "https://github.com/SamuelLHuber/pi-fff#readme",
+  "bugs": {
+    "url": "https://github.com/SamuelLHuber/pi-fff/issues"
+  },
+  "keywords": [
+    "pi",
+    "pi-extension",
+    "fff",
+    "search",
+    "grep",
+    "fuzzy-search",
+    "ai-agent"
+  ],
+  "pi": {
+    "extensions": ["./src/index.ts"]
+  },
+  "dependencies": {
+    "@ff-labs/fff-node": "^0.5.1"
+  },
+  "devDependencies": {
+    "@mariozechner/pi-coding-agent": "*",
+    "@mariozechner/pi-tui": "*",
+    "@sinclair/typebox": "*",
+    "@types/node": "^24.5.2",
+    "typescript": "^6.0.2"
+  },
+  "trustedDependencies": [
+    "koffi",
+    "protobufjs"
+  ]
+}
