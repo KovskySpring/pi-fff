@@ -181,8 +181,8 @@ export default function fffExtension(pi: ExtensionAPI) {
 
 	const grepSchema = Type.Object({
 		pattern: Type.String({ description: "Search pattern (plain text or regex)" }),
-		path: Type.Optional(
-			Type.String({ description: "Directory or file constraint, e.g. 'src/' or '*.ts' (default: project root)" }),
+		constraint: Type.Optional(
+			Type.String({ description: "Path file constraint, e.g. 'src/' or '*.ts' (default: project root)" }),
 		),
 		ignoreCase: Type.Optional(Type.Boolean({ description: "Case-insensitive search (default: smart case)" })),
 		literal: Type.Optional(
@@ -211,7 +211,8 @@ export default function fffExtension(pi: ExtensionAPI) {
 			"Search for bare identifiers (e.g. 'InProgressQuote'), not code syntax or multi-token regex.",
 			"Plain text search is faster and more reliable than regex. Prefer it.",
 			"After 2 grep calls, read the top result file instead of grepping more.",
-			"Use the path parameter for file/directory constraints: '*.ts', 'src/'.",
+      "Use the constraint parameter for file/directory constraints: '*.ts', 'src/'.",
+			"The constraint parameter does not support relative paths. Directories has to include trailing slash, e.g. 'src/'",
 		],
 		parameters: grepSchema,
 
@@ -223,8 +224,8 @@ export default function fffExtension(pi: ExtensionAPI) {
 
 			// Build query: prepend path constraint if provided
 			let query = params.pattern;
-			if (params.path) {
-				query = `${params.path} ${query}`;
+			if (params.constraint) {
+				query = `${params.constraint} ${query}`;
 			}
 
 			// Determine mode
@@ -292,7 +293,7 @@ export default function fffExtension(pi: ExtensionAPI) {
 		renderCall(args, theme, context) {
 			const text = (context.lastComponent as Text | undefined) ?? new Text("", 0, 0);
 			const pattern = args?.pattern ?? "";
-			const path = args?.path ?? ".";
+			const path = args?.constraint ?? ".";
 			let content =
 				theme.fg("toolTitle", theme.bold("grep")) +
 				" " +
@@ -335,7 +336,7 @@ export default function fffExtension(pi: ExtensionAPI) {
 		pattern: Type.String({
 			description: "Fuzzy search query for file names. Supports path prefixes ('src/') and globs ('*.ts').",
 		}),
-		path: Type.Optional(Type.String({ description: "Directory to search in (default: project root)" })),
+		constraint: Type.Optional(Type.String({ description: "Directory to search in (default: project root)" })),
 		limit: Type.Optional(
 			Type.Number({ description: `Maximum number of results (default: ${DEFAULT_FIND_LIMIT})` }),
 		),
@@ -354,7 +355,8 @@ export default function fffExtension(pi: ExtensionAPI) {
 		promptGuidelines: [
 			"Keep queries short -- prefer 1-2 terms max.",
 			"Multiple words narrow results (waterfall), they are not OR.",
-			"Use this to find files by name. Use grep to search file contents.",
+      "Use this to find files by name. Use grep to search file contents.",
+			"The constraint parameter does not support relative paths. Directories has to include trailing slash, e.g. 'src/'",
 		],
 		parameters: findSchema,
 
@@ -366,8 +368,8 @@ export default function fffExtension(pi: ExtensionAPI) {
 
 			// Build query: prepend path constraint if provided
 			let query = params.pattern;
-			if (params.path) {
-				query = `${params.path} ${query}`;
+			if (params.constraint) {
+				query = `${params.constraint} ${query}`;
 			}
 
 			const searchResult = f.fileSearch(query, {
@@ -416,7 +418,7 @@ export default function fffExtension(pi: ExtensionAPI) {
 		renderCall(args, theme, context) {
 			const text = (context.lastComponent as Text | undefined) ?? new Text("", 0, 0);
 			const pattern = args?.pattern ?? "";
-			const path = args?.path ?? ".";
+			const path = args?.constraint ?? ".";
 			let content =
 				theme.fg("toolTitle", theme.bold("find")) +
 				" " +
@@ -488,7 +490,8 @@ export default function fffExtension(pi: ExtensionAPI) {
 			"Use multi_grep when you need to find multiple identifiers at once (OR logic).",
 			"Include all naming conventions: snake_case, PascalCase, camelCase variants.",
 			"Patterns are literal text. Never escape special characters.",
-			"Use the constraints parameter for file type/path filtering, not inside patterns.",
+      "Use the constraints parameter for file type/path filtering, not inside patterns.",
+			"The constraints parameter does not support relative paths. Directories has to include trailing slash, e.g. 'src/'",
 		],
 		parameters: multiGrepSchema,
 
